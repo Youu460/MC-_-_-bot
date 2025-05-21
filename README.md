@@ -14,8 +14,3 @@
 </p>
 </details>
 
-### Deploy to VPS
-<details>
-  <summary>Click to Expand</summary>
-  <p>
-
