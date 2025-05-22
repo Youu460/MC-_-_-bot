@@ -1,5 +1,3 @@
-# Kanged From @TroJanZheX
-#hyper link mode by mn-bots
 import asyncio
 import re
 import ast
@@ -65,25 +63,17 @@ async def next_page(bot, query):
 
     settings = await get_settings(query.message.chat.id)
 
-    if HYPER_MODE:
-        cap_lines = []
-        for file in files:
-            file_link = f"https://t.me/{temp.U_NAME}?start=file_{file.file_id}"
-            cap_lines.append(f"📁 {get_size(file.file_size)} - [{file.file_name}]({file_link})")
-        cap_text = "\n".join(cap_lines)
-        btn = []
-    else:
-        if settings['button']:
-            btn = [
-                [
-                    InlineKeyboardButton(
-                        text=f"📂[{get_size(file.file_size)}] ➵ {file.file_name}", callback_data=f'files#{file.file_id}'
-                    ),
-                ]
-                for file in files
+    if settings['button']:
+        btn = [
+            [
+                InlineKeyboardButton(
+                    text=f"📂[{get_size(file.file_size)}] ➵ {file.file_name}", callback_data=f'files#{file.file_id}'
+                ),
             ]
-        else:
-            btn = [
+            for file in files
+        ]
+    else:
+        btn = [
                 [
                     InlineKeyboardButton(
                         text=f"{file.file_name}", callback_data=f'files#{file.file_id}'
@@ -126,20 +116,11 @@ async def next_page(bot, query):
         )
 
     try:
-        if HYPER_MODE:
-            await query.edit_message_text(
-                text=cap_text,
-                reply_markup=InlineKeyboardMarkup(btn),
-                parse_mode=enums.ParseMode.MARKDOWN,
-                disable_web_page_preview=True
-            )
-        else:
-            await query.edit_message_reply_markup(
-                reply_markup=InlineKeyboardMarkup(btn)
-            )
+        await query.edit_message_reply_markup(
+            reply_markup=InlineKeyboardMarkup(btn)
+        )
     except MessageNotModified:
         pass
-
     await query.answer()
 
 @Client.on_callback_query(filters.regex(r"^spol")) 
@@ -681,26 +662,7 @@ async def auto_filter(client, msg, spoll=False):
 
     pre = 'filep' if settings['file_secure'] else 'file'
 
-    if HYPER_MODE:
-        cap_lines = []
-        for file in files:
-            file_link = f"https://t.me/{temp.U_NAME}?start={pre}_{file.file_id}"
-            cap_lines.append(f"📁 {get_size(file.file_size)} - [{file.file_name}]({file_link})")
-        cap_text = "\n".join(cap_lines)
-
-        btn = []
-        if offset != "":
-            key = f"{message.chat.id}-{message.id}"
-            BUTTONS[key] = search
-            req = message.from_user.id if message.from_user else 0
-            btn.append([
-                InlineKeyboardButton(text=f"📃 1/{math.ceil(int(total_results) / 10)}", callback_data="pages"),
-                InlineKeyboardButton(text="NEXT ▶️", callback_data=f"next_{req}_{key}_{offset}")
-            ])
-        else:
-            btn.append([InlineKeyboardButton(text="📃 1/1", callback_data="pages")])
-    else:
-        if settings["button"]:
+    if settings["button"]:
             btn = [
                 [
                     InlineKeyboardButton(
@@ -709,8 +671,8 @@ async def auto_filter(client, msg, spoll=False):
                 ]
                 for file in files
             ]
-        else:
-            btn = [
+    else:
+        btn = [
                 [
                     InlineKeyboardButton(
                         text=f"{file.file_name}",
