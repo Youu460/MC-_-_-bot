@@ -44,7 +44,6 @@ speedtest>=0.0.1
 speedtest-cli
 telegraph
 tgcrypto
-pyrotgfork
 ujson
 wget
 werkzeug>=2.0
@@ -56,4 +55,4 @@ youtube-search-python>=1.4.6
 ytthumb
 git+https://github.com/agronholm/anyio
 git+https://github.com/Joelkb/cinemagoer
-
+pyrofork
