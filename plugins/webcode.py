@@ -9,5 +9,5 @@ async def bot_run():
   
 @routes.get("/", allow_head=True)
 async def root_route_handler(request):
-    return webserver.json_response(" Web Supported . . . !  This is a preview of WeB . . .! ! !")
+    return webserver.json_response(" MC BOT")
  
