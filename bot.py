@@ -45,7 +45,7 @@ async def keep_alive():
                 logging.info("Sent keep-alive request.")
             except Exception as e:
                 logging.error(f"Keep-alive request failed: {e}")
-            await asyncio.sleep(111)
+            await asyncio.sleep(2)
 
 class Bot(Client):
 
@@ -55,9 +55,9 @@ class Bot(Client):
             api_id=API_ID,
             api_hash=API_HASH,
             bot_token=BOT_TOKEN,
-            workers=50,
+            workers=200,
             plugins={"root": "plugins"},
-            sleep_threshold=5,
+            sleep_threshold=20,
         )
 
     async def kulasthree(self):
@@ -82,18 +82,14 @@ class Bot(Client):
         logging.info(f"{me.first_name} running on Pyrogram v{__version__} (Layer {layer}) started on {me.username}.")
         logging.info(LOG_STR)
         await self.send_message(chat_id=LOG_CHANNEL, text=script.RESTART_TXT)  # Log restart message
-        print("mntg4u</>")
-
+        
         tz = pytz.timezone('Asia/Kolkata')
         today = date.today()
         now = datetime.now(tz)
         time = now.strftime("%H:%M:%S %p")
         await self.send_message(chat_id=LOG_CHANNEL, text=script.RESTART_GC_TXT.format(today, time))
 
-        # Start restart task
         asyncio.create_task(self.kulasthree())
-
-        # Start keep-alive task
         asyncio.create_task(keep_alive())
 
         client = webserver.AppRunner(await bot_run())
