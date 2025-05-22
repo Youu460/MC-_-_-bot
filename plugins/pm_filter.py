@@ -34,12 +34,6 @@ SPELL_CHECK = {}
 
 @Client.on_message(filters.group | filters.private & filters.text & filters.incoming) 
 async def give_filter(client, message):
-    await asyncio.sleep(5)
-    try:
-        await message.delete()
-    except Exception as e:
-        logger.exception("Failed to delete message:", e)
-
     k = await manual_filters(client, message)
     if k == False:
         await auto_filter(client, message)
@@ -676,10 +670,7 @@ async def auto_filter(client, msg, spoll=False):
             search = message.text
             files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
             if not files:
-                if settings["spell_check"]:
-                    return await advantage_spell_chok(client, msg)
-                else:
-                    return
+                return
         else:
             return
     else:
@@ -742,80 +733,10 @@ async def auto_filter(client, msg, spoll=False):
         else:
             btn.append([InlineKeyboardButton(text="📃 1/1", callback_data="pages")])
 
-    imdb = await get_poster(search, file=(files[0]).file_name) if settings["imdb"] else None
-    TEMPLATE = settings['template']
-    if imdb:
-        cap = TEMPLATE.format(
-            query=search,
-            title=imdb['title'],
-            votes=imdb['votes'],
-            aka=imdb["aka"],
-            seasons=imdb["seasons"],
-            box_office=imdb['box_office'],
-            localized_title=imdb['localized_title'],
-            kind=imdb['kind'],
-            imdb_id=imdb["imdb_id"],
-            cast=imdb["cast"],
-            runtime=imdb["runtime"],
-            countries=imdb["countries"],
-            certificates=imdb["certificates"],
-            languages=imdb["languages"],
-            director=imdb["director"],
-            writer=imdb["writer"],
-            producer=imdb["producer"],
-            composer=imdb["composer"],
-            cinematographer=imdb["cinematographer"],
-            music_team=imdb["music_team"],
-            distributors=imdb["distributors"],
-            release_date=imdb['release_date'],
-            year=imdb['year'],
-            genres=imdb['genres'],
-            poster=imdb['poster'],
-            plot=imdb['plot'],
-            rating=imdb['rating'],
-            url=imdb['url'],
-            **locals()
-        )
-    else:
-        cap = script.RESULT_TXT.format(search)
-
-    if imdb and imdb.get('poster'):
-        try:
-            delauto = await message.reply_photo(
-                photo=imdb.get('poster'),
-                caption=cap[:1024],
-                reply_markup=InlineKeyboardMarkup(btn)
-            )
-            await asyncio.sleep(300)
-            await delauto.delete()
-        except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
-            pic = imdb.get('poster')
-            poster = pic.replace('.jpg', "._V1_UX360.jpg")
-            delau = await message.reply_photo(
-                photo=poster,
-                caption=cap[:1024],
-                reply_markup=InlineKeyboardMarkup(btn)
-            )
-            await asyncio.sleep(300)
-            await delau.delete()
-        except Exception as e:
-            logger.exception(e)
-            audel = await message.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
-            await asyncio.sleep(300)
-            await audel.delete()
-    else:
-        if HYPER_MODE:
-            autodel = await message.reply_text(
-                cap_text,
-                reply_markup=InlineKeyboardMarkup(btn),
-                parse_mode=enums.ParseMode.MARKDOWN,
-                disable_web_page_preview=True
-            )
-        else:
-            autodel = await message.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
-
-        await asyncio.sleep(300)
-        await autodel.delete()
+    cap = script.RESULT_TXT.format(search)
+    autodel = await message.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
+    await asyncio.sleep(300)
+    await autodel.delete()
 
     if spoll:
         await msg.message.delete()
